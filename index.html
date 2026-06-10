@@ -55,21 +55,6 @@
     position: relative;
     z-index: 1;
   }
-  .logo-box {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(200,134,10,0.3);
-    border-radius: 16px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .logo-box img {
-    height: 90px;
-    width: auto;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(232,116,26,0.3));
-  }
 
   .header-divider {
     width: 200px;
@@ -268,6 +253,10 @@
     border-color: #2E7D32;
     background: rgba(46,125,50,0.04);
   }
+  .file-upload-area.file-error {
+    border-color: var(--deep-red);
+    background: rgba(139,26,26,0.04);
+  }
   .file-upload-area input[type="file"] {
     position: absolute; inset: 0;
     opacity: 0; cursor: pointer;
@@ -287,6 +276,17 @@
     color: #2E7D32;
     font-weight: 600;
     margin-top: 8px;
+  }
+  .file-upload-area .file-error-msg {
+    font-size: 12px;
+    color: var(--deep-red);
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .file-upload-area .file-size {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
   }
 
   /* Divider */
@@ -379,31 +379,6 @@
   .field-group.error .radio-group,
   .field-group.error .file-upload-area { border-color: var(--deep-red); }
   .field-group.error .field-error { display: block; }
-
-  /* Certificate section */
-  .cert-section {
-    max-width: 700px;
-    margin: 32px auto 0;
-    padding: 0 16px;
-  }
-  .cert-section h3 {
-    text-align: center;
-    color: #F5C842;
-    font-family: 'Tiro Devanagari Marathi', serif;
-    font-size: 18px;
-    margin-bottom: 16px;
-    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
-  }
-  .cert-img-wrap {
-    border-radius: 16px;
-    overflow: hidden;
-    border: 3px solid var(--gold);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-  }
-  .cert-img-wrap img {
-    width: 100%;
-    display: block;
-  }
 
   /* Loading spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -535,12 +510,12 @@
         <div class="field-error" id="err-tshirt">कृपया साईज निवडा</div>
       </div>
 
-      <div class="section-divider"><span>पेमेंट स्क्रीनशॉट</span></div>
+      <div class="section-divider"><span>पेमेंट स्क्री��शॉट</span></div>
 
       <!-- Payment Screenshot -->
       <div class="field-group" id="fg-payment">
         <label>पेमेंट स्क्रीनशॉट / Payment Screenshot <span class="req">*</span>
-          <span class="hint">(JPG, PNG, PDF — max 10MB)</span>
+          <span class="hint">(JPG, PNG, PDF — max 2 MB)</span>
         </label>
         <div class="file-upload-area" id="uploadArea">
           <input type="file" id="paymentFile" accept="image/*,.pdf" onchange="handleFileSelect(this)">
@@ -548,6 +523,8 @@
           <strong style="font-size:14px;color:#5C1A1A;">फाईल निवडा / Choose File</strong>
           <p>किंवा येथे ड्रॅग करा / or drag &amp; drop here</p>
           <div class="file-name" id="fileName"></div>
+          <div class="file-size" id="fileSize"></div>
+          <div class="file-error-msg" id="fileErrorMsg"></div>
         </div>
         <div class="field-error" id="err-payment">कृपया पेमेंट स्क्रीनशॉट अपलोड करा</div>
       </div>
@@ -586,15 +563,50 @@
 </div>
 
 <script>
+const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB in bytes
+
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
 function handleFileSelect(input) {
   const area = document.getElementById('uploadArea');
   const nameEl = document.getElementById('fileName');
+  const sizeEl = document.getElementById('fileSize');
+  const errorEl = document.getElementById('fileErrorMsg');
+  
+  // Clear previous states
+  area.classList.remove('has-file', 'file-error');
+  nameEl.textContent = '';
+  sizeEl.textContent = '';
+  errorEl.textContent = '';
+  
   if (input.files && input.files[0]) {
+    const file = input.files[0];
+    const fileSize = file.size;
+    
+    // Check file size
+    if (fileSize > MAX_FILE_SIZE) {
+      area.classList.add('file-error');
+      nameEl.textContent = '❌ ' + file.name;
+      sizeEl.textContent = formatFileSize(fileSize);
+      errorEl.textContent = '⚠️ फाईल 2 MB पेक्षा मोठी आहे / File size exceeds 2 MB';
+      input.value = ''; // Clear the file input
+      return;
+    }
+    
+    // File is valid
     area.classList.add('has-file');
-    nameEl.textContent = '✅ ' + input.files[0].name;
+    nameEl.textContent = '✅ ' + file.name;
+    sizeEl.textContent = 'Size: ' + formatFileSize(fileSize);
   } else {
     area.classList.remove('has-file');
     nameEl.textContent = '';
+    sizeEl.textContent = '';
   }
 }
 
@@ -621,12 +633,25 @@ function validate() {
     ['mobile', /^[0-9]{10}$/.test(getVal('mobile'))],
     ['amount', getVal('amount') !== '' && Number(getVal('amount')) > 0],
     ['tshirt', getVal('tshirt') !== ''],
-    ['payment', document.getElementById('paymentFile').files.length > 0],
   ];
+  
   checks.forEach(([id, valid]) => {
     setError(id, !valid);
     if (!valid) ok = false;
   });
+  
+  // Check payment file separately
+  const paymentFile = document.getElementById('paymentFile').files[0];
+  if (!paymentFile) {
+    setError('payment', true);
+    ok = false;
+  } else if (paymentFile.size > MAX_FILE_SIZE) {
+    setError('payment', true);
+    ok = false;
+  } else {
+    setError('payment', false);
+  }
+  
   return ok;
 }
 
@@ -692,8 +717,10 @@ function resetForm() {
   document.querySelectorAll('input[type=radio]').forEach(el => el.checked = false);
   document.getElementById('tshirt').value = '';
   document.getElementById('paymentFile').value = '';
-  document.getElementById('uploadArea').classList.remove('has-file');
+  document.getElementById('uploadArea').classList.remove('has-file', 'file-error');
   document.getElementById('fileName').textContent = '';
+  document.getElementById('fileSize').textContent = '';
+  document.getElementById('fileErrorMsg').textContent = '';
   document.querySelectorAll('.field-group').forEach(fg => fg.classList.remove('error'));
 }
 </script>
