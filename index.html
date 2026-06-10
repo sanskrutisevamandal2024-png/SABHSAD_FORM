@@ -659,7 +659,7 @@ function submitForm() {
     };
 
     // Send to Google Apps Script
-    fetch('https://script.google.com/macros/s/AKfycbwVPghwV5yOkB6H5j-Wb7F5IDj4T81QAB33nyBIUJM9lAzhlvvzNB5EbmryHTNLZU3m/exec', {
+    fetch('https://script.google.com/macros/s/AKfycby_fXdpMdeXtA4F5oKoN2-CnhyAK9ILRB8nrVAw-k0jmc9uNsGPJtWXUb_DK_KxhViI/exec', {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
@@ -670,16 +670,15 @@ function submitForm() {
         document.getElementById('successMsg').style.display = 'block';
         btn.disabled = false;
         btn.classList.remove('loading');
-      }, 1000);
+      }, 1500);
     }).catch(function(err) {
       console.error('Error:', err);
-      // Still show success even if there's an error (Apps Script may still receive it)
       setTimeout(function() {
         document.getElementById('formBody').style.display = 'none';
         document.getElementById('successMsg').style.display = 'block';
         btn.disabled = false;
         btn.classList.remove('loading');
-      }, 1000);
+      }, 1500);
     });
   };
   reader.readAsDataURL(file);
