@@ -483,7 +483,7 @@
             <label><input type="radio" name="working" value="Self-employed (Business/Own Work)"> व्यवसाय / Business</label>
             <label><input type="radio" name="working" value="Not Working"> बेकार / Not Working</label>
           </div>
-          <div class="field-error" id="err-working">कृपया दर्जा निवडा</div>
+          <div class="field-error" id="err-working">कृपया दर्जা निवडा</div>
         </div>
       </div>
 
@@ -564,25 +564,16 @@
         * सर्व आवश्यक माहिती भरणे अनिवार्य आहे | All marked fields are mandatory
       </p>
 
-      <!-- Insert certificate copy here via small script -->
-      <script>
-        document.addEventListener('DOMContentLoaded', function(){
-          try {
-            const paragraphs = Array.from(document.querySelectorAll('.form-body p'));
-            let target = paragraphs.find(p => p.textContent && (p.textContent.includes('All marked fields are mandatory') || p.textContent.includes('सर्व आवश्यक माहिती')));
-            if(!target) target = paragraphs[paragraphs.length-1];
-            const cert = document.querySelector('.cert-section');
-            if (target && cert) {
-              const clone = cert.cloneNode(true);
-              // small wrapper for spacing
-              const wrap = document.createElement('div');
-              wrap.style.marginTop = '18px';
-              wrap.appendChild(clone);
-              target.parentNode.insertBefore(wrap, target.nextSibling);
-            }
-          } catch (e) { console.error(e); }
-        });
-      </script>
+      <!-- Certificate inserted inline -->
+      <div class="cert-section" id="inlineCert">
+        <h3>📜 नोंदणी प्रमाणपत्र — Certificate of Registration</h3>
+        <div class="cert-img-wrap">
+          <img src="https://drive.google.com/uc?export=view&id=1YWxYVx2hpsKkXHAdCcJfEI5K5Y3Jn9Of" alt="Certificate of Registration / नोंदणीचे प्रमाणपत्र">
+        </div>
+        <p style="text-align:center;color:#C8A060;font-size:12px;margin-top:12px;">
+          नोंदणी क्रमांक F-0087003(GBR) | मुंबई सार्वजनिक विश्वस्त व्यवस्था अधिनियम, १९५०
+        </p>
+      </div>
 
     </div>
 
