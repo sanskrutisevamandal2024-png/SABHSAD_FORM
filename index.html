@@ -41,7 +41,7 @@
   .header::before {
     content: '';
     position: absolute; inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8860A' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23C8860A' fill-opa[...]");
     pointer-events: none;
   }
 
@@ -194,7 +194,7 @@
     box-shadow: 0 0 0 3px rgba(232,116,26,0.12);
   }
   select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8860A' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8860A' stroke-width='2' fil[...]");
     background-repeat: no-repeat;
     background-position: right 14px center;
     padding-right: 36px;
@@ -380,6 +380,31 @@
   .field-group.error .file-upload-area { border-color: var(--deep-red); }
   .field-group.error .field-error { display: block; }
 
+  /* Certificate section */
+  .cert-section {
+    max-width: 700px;
+    margin: 32px auto 0;
+    padding: 0 16px;
+  }
+  .cert-section h3 {
+    text-align: center;
+    color: #F5C842;
+    font-family: 'Tiro Devanagari Marathi', serif;
+    font-size: 18px;
+    margin-bottom: 16px;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+  .cert-img-wrap {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 3px solid var(--gold);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .cert-img-wrap img {
+    width: 100%;
+    display: block;
+  }
+
   /* Loading spinner */
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinner {
@@ -510,7 +535,7 @@
         <div class="field-error" id="err-tshirt">कृपया साईज निवडा</div>
       </div>
 
-      <div class="section-divider"><span>पेमेंट स्क्री��शॉट</span></div>
+      <div class="section-divider"><span>पेमेंट स्क्रीनशॉट</span></div>
 
       <!-- Payment Screenshot -->
       <div class="field-group" id="fg-payment">
@@ -538,6 +563,27 @@
       <p style="text-align:center;font-size:11px;color:#9E8070;margin-top:14px;">
         * सर्व आवश्यक माहिती भरणे अनिवार्य आहे | All marked fields are mandatory
       </p>
+
+      <!-- Insert certificate copy here via small script -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          try {
+            const paragraphs = Array.from(document.querySelectorAll('.form-body p'));
+            let target = paragraphs.find(p => p.textContent && (p.textContent.includes('All marked fields are mandatory') || p.textContent.includes('सर्व आवश्यक माहिती')));
+            if(!target) target = paragraphs[paragraphs.length-1];
+            const cert = document.querySelector('.cert-section');
+            if (target && cert) {
+              const clone = cert.cloneNode(true);
+              // small wrapper for spacing
+              const wrap = document.createElement('div');
+              wrap.style.marginTop = '18px';
+              wrap.appendChild(clone);
+              target.parentNode.insertBefore(wrap, target.nextSibling);
+            }
+          } catch (e) { console.error(e); }
+        });
+      </script>
+
     </div>
 
     <!-- Success Screen -->
@@ -550,7 +596,7 @@
       Your registration has been recorded in Google Sheet.<br>
       You will be contacted by our team shortly.</p>
       <br>
-      <button onclick="resetForm()" style="background:linear-gradient(135deg,#8B1A1A,#E8741A);color:white;border:none;padding:12px 32px;border-radius:10px;font-size:14px;cursor:pointer;font-weight:600;">
+      <button onclick="resetForm()" style="background:linear-gradient(135deg,#8B1A1A,#E8741A);color:white;border:none;padding:12px 32px;border-radius:10px;font-size:14px;cursor:pointer;font-weigh[...]
         🔄 नवीन नोंदणी / New Registration
       </button>
     </div>
